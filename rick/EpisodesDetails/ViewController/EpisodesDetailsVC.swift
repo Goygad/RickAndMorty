@@ -11,6 +11,7 @@ import Photos
 final class EpisodesDetailsVC: UIViewController {
     
     // MARK: - Private Properties
+    
     private let newPhotoIcon = UIImageView()
     private let characterImageView = UIImageView()
     private let charNameLabel = UILabel()
@@ -22,7 +23,6 @@ final class EpisodesDetailsVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         view.backgroundColor = .white
         
         setNavController()
@@ -37,7 +37,7 @@ final class EpisodesDetailsVC: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: false)
-        self.navigationController?.navigationBar.isHidden = false
+        navigationController?.navigationBar.isHidden = false
     }
     
     // MARK: - Functions
@@ -49,25 +49,26 @@ final class EpisodesDetailsVC: UIViewController {
     // MARK: - Private functions
     
     private func loadCharacters(id: Int) {
-        let session = URLSession.shared
-        let decoder = JSONDecoder()
-        
         guard let urlDetails = URL(string: "https://rickandmortyapi.com/api/character/\(id)") else {
             return
         }
         
-        session.dataTask(with: urlDetails) { data, response, error in
-            DispatchQueue.main.async {
-                if error == nil, let data = data {
-                    guard let characterPost = try? decoder.decode(CharacterModel.self, from: data) else {
-                        return
-                    }
-                    self.characterModel.append(characterPost)
+        URLSession.shared.dataTask(with: urlDetails) { [weak self] data, response, error in
+            guard let self = self, error == nil, let data = data else { return }
+            
+            do {
+                let characterPost = try JSONDecoder().decode(CharacterModel.self, from: data)
+                self.characterModel.append(characterPost)
+
+                DispatchQueue.main.async {
                     self.infoTableView.reloadData()
                 }
+                
+            } catch {
+                print("Error decoding episodes: \(error)")
             }
         }.resume()
-    }
+    } 
     
     private func loadImage(link: String) {
         DispatchQueue.global().async {
@@ -97,13 +98,9 @@ final class EpisodesDetailsVC: UIViewController {
     }
     
     private func createTableView() {
-        
         infoTableView.register(DetailsTableViewCell.self, forCellReuseIdentifier: DetailsTableViewCell.identifire)
         infoTableView.backgroundColor = .white
-        
-        infoTableView.delegate = self
         infoTableView.dataSource = self
-        
         view.addSubview(infoTableView)
         
         infoTableView.translatesAutoresizingMaskIntoConstraints = false
@@ -114,7 +111,6 @@ final class EpisodesDetailsVC: UIViewController {
     }
     
     private func createCharImage() {
-        
         let hight: CGFloat = 150
         let weight: CGFloat = 150
         
@@ -149,10 +145,6 @@ final class EpisodesDetailsVC: UIViewController {
         newPhotoIcon.addGestureRecognizer(tap)
     }
     
-    @objc func cameraIconTapped() {
-        showActionSheet()
-    }
-    
     private func showActionSheet() {
         let imagePicker = UIImagePickerController()
         let actionSheet = UIAlertController(title: "", message: "Загрузить изображение", preferredStyle: .actionSheet)
@@ -173,7 +165,7 @@ final class EpisodesDetailsVC: UIViewController {
         present(actionSheet, animated: true)
     }
     
-    func phot() {
+    private func phot() {
         if PHPhotoLibrary.authorizationStatus() != PHAuthorizationStatus.authorized {
             PHPhotoLibrary.requestAuthorization({ (status: PHAuthorizationStatus) -> Void in () })
         }
@@ -192,7 +184,6 @@ final class EpisodesDetailsVC: UIViewController {
     }
     
     private func createInfoLabel() {
-        
         infoLabel.backgroundColor = .white
         infoLabel.text = "Informations"
         infoLabel.textColor = .gray
@@ -205,21 +196,23 @@ final class EpisodesDetailsVC: UIViewController {
         infoLabel.topAnchor.constraint(equalTo: characterImageView.bottomAnchor, constant: 98).isActive = true
         infoLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -21).isActive = true
     }
+    
+    @objc func cameraIconTapped() {
+        showActionSheet()
+    }
 }
 
 // MARK: - Extension
 
-extension EpisodesDetailsVC: UITableViewDelegate {
-    
-}
-
 extension EpisodesDetailsVC: UITableViewDataSource {
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return characterModel.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: DetailsTableViewCell.identifire, for: indexPath) as? DetailsTableViewCell
+        
         let model = characterModel[indexPath.row]
         loadImage(link: model.image)
         charNameLabel.text = model.name
@@ -230,6 +223,7 @@ extension EpisodesDetailsVC: UITableViewDataSource {
 }
 
 extension EpisodesDetailsVC: UIImagePickerControllerDelegate, UINavigationControllerDelegate  {
+    
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         characterImageView.image = info[.originalImage] as? UIImage
         dismiss(animated: true, completion: nil)

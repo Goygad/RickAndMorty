@@ -7,7 +7,7 @@
 
 import UIKit
 
-class SplashVC: UIViewController {
+final class SplashVC: UIViewController {
     
     // MARK: - Private Properties
     
@@ -25,7 +25,7 @@ class SplashVC: UIViewController {
         setPortalPic()
         rotatePortal()
     }
-
+    
     // MARK: - Private functions
     
     private func setRmPic() {
@@ -50,7 +50,7 @@ class SplashVC: UIViewController {
     }
     
     private func rotatePortal() {
-        portalLaunchPic.rotate360Degrees()
+        rotate360Degrees()
     }
     
     private func timer() {
@@ -63,13 +63,8 @@ class SplashVC: UIViewController {
             self.present(navTabBar, animated: true)
         }
     }
-}
-
-// MARK: - Extension
-
-extension UIView {
     
-    func rotate360Degrees(duration: CFTimeInterval = 3.0, completionDelegate: AnyObject? = nil) {
+    private func rotate360Degrees(duration: CFTimeInterval = 3.0, completionDelegate: AnyObject? = nil) {
         let rotateAnimation = CABasicAnimation(keyPath: "transform.rotation")
         rotateAnimation.fromValue = 0.0
         rotateAnimation.toValue = CGFloat(.pi * 2.0)
@@ -78,6 +73,7 @@ extension UIView {
         if let delegate: AnyObject = completionDelegate {
             rotateAnimation.delegate = delegate as? any CAAnimationDelegate
         }
-        self.layer.add(rotateAnimation, forKey: nil)
+        
+        portalLaunchPic.layer.add(rotateAnimation, forKey: nil)
     }
 }

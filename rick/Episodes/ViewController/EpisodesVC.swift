@@ -32,6 +32,7 @@ final class EpisodesVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+        
         loadEpisodes()
         createLogo()
         createSearchBar()
@@ -67,6 +68,7 @@ final class EpisodesVC: UIViewController {
                 DispatchQueue.main.async {
                     self.collectionView.reloadData()
                 }
+                
             } catch {
                 print("Error decoding episodes: \(error)")
             }
@@ -87,6 +89,7 @@ final class EpisodesVC: UIViewController {
                 DispatchQueue.main.async {
                     self.collectionView.reloadData()
                 }
+                
             } catch {
                 print("Error decoding character: \(error)")
             }
@@ -110,7 +113,6 @@ final class EpisodesVC: UIViewController {
         searchBar.layer.borderWidth = 1
         searchBar.layer.borderColor = .init(gray: 5, alpha: 1)
         searchBar.delegate = self
-        
         view.addSubview(searchBar)
         
         searchBar.translatesAutoresizingMaskIntoConstraints = false

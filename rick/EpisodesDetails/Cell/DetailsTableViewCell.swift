@@ -7,13 +7,14 @@
 
 import UIKit
 
-class DetailsTableViewCell: UITableViewCell {
+final class DetailsTableViewCell: UITableViewCell {
     
     // MARK: - Properties
     
     static let identifire = "detailsCell"
     
     // MARK: - Private Properties
+    
     private let separatorGender = UIView()
     private let separatorStatus = UIView()
     private let separatorSpeice = UIView()
@@ -73,7 +74,6 @@ class DetailsTableViewCell: UITableViewCell {
         originSubLabel.text = model.origin.name
         typeSubLabel.text = model.type
         locationSubLabel.text = model.location.name
-        
     }
     
     // MARK: - Private functions
@@ -131,7 +131,6 @@ class DetailsTableViewCell: UITableViewCell {
     }
     
     private func setStackView() {
-        
         stackView.addArrangedSubview(genderLabel)
         stackView.addArrangedSubview(genderSubLabel)
         stackView.setCustomSpacing(11, after: genderSubLabel)
@@ -170,8 +169,8 @@ class DetailsTableViewCell: UITableViewCell {
         stackView.addArrangedSubview(locationLabel)
         stackView.setCustomSpacing(6, after: locationLabel)
         stackView.addArrangedSubview(locationSubLabel)
-        
         addSubview(stackView)
+        
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.topAnchor.constraint(equalTo: topAnchor).isActive = true
         stackView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
